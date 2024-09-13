@@ -80,8 +80,20 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): \Illuminate\Http\JsonResponse
     {
-        //
+        try {
+            @csrf_token();
+            $userExist = User::find($id);
+            if (!$userExist) {
+                return response()->json(['message' => 'User not found'], 404);
+            } else {
+                $user = User::find($id);
+                $user->delete();
+                return response()->json(['message' => 'User deleted successfully'], 204);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 }
