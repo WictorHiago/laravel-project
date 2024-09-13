@@ -14,6 +14,8 @@ class UserController extends Controller
     public function index()
     {
         //
+        $users = User::all();
+        return response()->json($users, 200);
     }
 
     /**
@@ -45,6 +47,13 @@ class UserController extends Controller
     public function show(string $id)
     {
         //
+        $user = User::find($id);
+
+        if ($user) {
+            return response()->json($user, 200);
+        } else {
+            return response()->json(['message' => 'User not found'], 404);
+        }
     }
 
     /**
@@ -53,6 +62,19 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        $userExist = User::find($id);
+        if (!$userExist) {
+            return response()->json(['message' => 'User not found'], 404);
+        } else {
+            $user = User::find($id);
+            $user->full_name = $request->full_name;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
+            $user->save();
+        }
+
+        @csrf_token();
+        return response()->json($user, 200);
     }
 
     /**
